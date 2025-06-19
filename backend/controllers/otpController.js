@@ -51,19 +51,10 @@ const otpController = {
     session.startTransaction();
     try {
       const { clientName, idDoc, addressDoc, images, DOB } = req.body;
+      console.log(DOB);
       if (!clientName) {
         return APIResponse.error(res, {}, "Client Name is missing", 400);
       }
-      // const findUser = await user.findOne(
-      //   {
-      //     name: req.user.name,
-      //     email: req.user.email,
-      //   },
-      //   { _id: 1 }
-      // );
-      // if (!findUser) {
-      //   return APIResponse.error(res, {}, "No such user found", 404);
-      // }
       let otp_random;
       do {
         otp_random = crypto.randomInt(100000, 999999).toString();
@@ -135,10 +126,12 @@ const otpController = {
 
             // From users collection
             "client.clientName": 1,
-            _id: 0,
+            _id: 1,
           },
         },
       ]);
+      console.log(result);
+
       const otpData = result[0];
       if (result.length === 0) {
         return APIResponse.error(
@@ -174,6 +167,7 @@ const otpController = {
         dob: otpData.dob,
         clientName: otpData.client.clientName,
         token: token,
+        otp_id: otpData._id,
       };
       res.cookie("token", token, {
         httpOnly: true,
@@ -185,7 +179,7 @@ const otpController = {
       return APIResponse.suceess(
         res,
         responseData,
-        "Authentication Successful",
+        "Verification Successful",
         200
       );
     } catch (err) {

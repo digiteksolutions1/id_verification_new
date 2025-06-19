@@ -13,6 +13,12 @@ export default function OTPVerification() {
   const inputRefs = useRef([]);
   const { authenticate, isAuthenticated } = useAuth();
 
+  useEffect(() => {
+    localStorage.removeItem("otp");
+    localStorage.removeItem("token");
+    localStorage.removeItem("id");
+  }, []);
+
   // Function to handle OTP completion
   const handleOTPComplete = async (completeOTP) => {
     setIsVerifying(true);
@@ -23,9 +29,11 @@ export default function OTPVerification() {
         { withCredentials: true }
       );
       toast.success(response?.data?.message);
+      localStorage.setItem("otp", completeOTP);
       console.log(response.data.data);
       if (response.status == 200 && response.data.data.token) {
         authenticate(response.data.data);
+        localStorage.setItem("id", response.data.data.otp_id);
         setIsVerifying(false);
         navigate("/personal-information");
       }

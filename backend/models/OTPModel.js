@@ -14,6 +14,7 @@ const otpSchema = new mongoose.Schema({
   idDoc: { type: Boolean },
   addressDoc: { type: Boolean },
   images: { type: Boolean },
+  dob: { type: Boolean },
 });
 
 module.exports = mongoose.model("otp", otpSchema);

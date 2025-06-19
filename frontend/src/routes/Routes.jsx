@@ -4,6 +4,8 @@ import OTPVerification from "../pages/public/OTPVerification";
 import PersonalInformation from "../pages/private/PersonalInformation";
 import IDCardUpload from "../pages/private/IDCardInformation";
 import AddressDocumentUpload from "../pages/private/AddressInformation";
+import SelfieVerification from "../pages/private/FaceVerification";
+import Thankyou from "../pages/private/Thankyou";
 
 const AppRoutes = () => {
   return (
@@ -18,7 +20,7 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/id-information"
+        path="/id-proof"
         element={
           <ProtectedRoute>
             <IDCardUpload />
@@ -26,10 +28,26 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/address-information"
+        path="/address-proof"
         element={
           <ProtectedRoute>
             <AddressDocumentUpload />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/face-verification"
+        element={
+          <ProtectedRoute>
+            <SelfieVerification />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/thankyou"
+        element={
+          <ProtectedRoute>
+            <Thankyou />
           </ProtectedRoute>
         }
       />

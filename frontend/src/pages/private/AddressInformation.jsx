@@ -8,8 +8,14 @@ import {
   AlertCircle,
   RefreshCw,
   FileText,
+  ArrowRight,
 } from "lucide-react";
 import Webcam from "react-webcam";
+import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
+import { getToken } from "../../utils/storage";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router";
 
 export default function AddressDocumentUpload() {
   const [addressDocument, setAddressDocument] = useState(null);
@@ -20,9 +26,15 @@ export default function AddressDocumentUpload() {
   const [documentType, setDocumentType] = useState("utility"); // utility, bank, government, other
   const webcamRef = useRef(null);
   const fileInputRef = useRef(null);
+  const token = getToken();
+  const { client, isAddress } = useAuth();
+  const navigate = useNavigate();
 
   // Check if device is mobile
   useEffect(() => {
+    if (!isAddress) {
+      navigate("/face-verification");
+    }
     const checkMobile = () => {
       setIsMobile(
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -131,24 +143,30 @@ export default function AddressDocumentUpload() {
 
   // Handle form submission
   const handleSubmit = async () => {
+    if (!addressDocument) {
+      toast.error("Address Document is missing");
+      return;
+    }
     setIsUploading(true);
 
     try {
-      // Here you would typically upload the document to your server
-      // Example API call:
-      // const formData = new FormData()
-      // formData.append('addressDocument', addressDocument.file)
+      const formData = new FormData();
+      formData.append("addressProof", addressDocument.file);
+      formData.append("client", client);
       // formData.append('documentType', documentType)
-      // const response = await fetch('/api/upload-address-document', {
-      //   method: 'POST',
-      //   body: formData
-      // })
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      alert("Address document uploaded successfully!");
-      // Here you would typically navigate to the next step
+      const response = await axios.post(
+        "http://localhost:3002/client/upload-address",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      toast.success(response?.data?.message);
+      navigate("/face-verification");
     } catch (error) {
       console.error("Error uploading document:", error);
       setErrors({
@@ -178,10 +196,11 @@ export default function AddressDocumentUpload() {
 
   return (
     <>
+      <Toaster />
       <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex justify-center md:pt-28">
         <div className="w-full max-w-4xl">
           {/* Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-3">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4 shadow-lg">
               <Shield className="w-8 h-8 text-white" />
             </div>
@@ -340,16 +359,6 @@ export default function AddressDocumentUpload() {
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-2">
-                      {/* <div className="mb-4 bg-gray-100 p-3 rounded-lg">
-                        <img
-                          src="/placeholder.svg?height=100&width=160"
-                          alt="Address Document Example"
-                          className="w-40 h-28 object-cover"
-                        />
-                      </div>
-                      <p className="text-sm text-gray-600 mb-2 text-center">
-                        Upload a clear image or PDF of your address document
-                      </p> */}
                       <p className="text-xs text-gray-500 mb-4 text-center">
                         Document must show your full name and current address
                       </p>
@@ -410,9 +419,9 @@ export default function AddressDocumentUpload() {
                 <div className="flex justify-center mt-5">
                   <button
                     onClick={handleSubmit}
-                    disabled={isUploading || !addressDocument}
+                    disabled={isUploading}
                     className={`w-1/2 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
-                      isUploading || !addressDocument
+                      isUploading
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl"
                     } flex items-center justify-center`}
@@ -424,8 +433,8 @@ export default function AddressDocumentUpload() {
                       </>
                     ) : (
                       <>
-                        <CheckCircle className="w-5 h-5 mr-2" />
                         <span>Continue</span>
+                        <ArrowRight className="w-5 h-5 ml-1" />
                       </>
                     )}
                   </button>

@@ -11,15 +11,26 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function PersonalInformation() {
   const [formData, setFormData] = useState({
     dateOfBirth: "",
-    countryCode: "+44",
     mobileNumber: "",
     ninNumber: "",
     noNIN: false,
   });
+  const navigate = useNavigate();
+  const { isDOB } = useAuth();
+
+  useEffect(() => {
+    if (!isDOB) {
+      navigate("/id-proof");
+    }
+  }, []);
 
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(true);
@@ -32,14 +43,14 @@ export default function PersonalInformation() {
   const [selectedMonth, setSelectedMonth] = useState(0);
 
   // Country codes data
-  const countryCodes = [
-    { code: "+44", country: "UK", flag: "🇬🇧" },
-    { code: "+1", country: "US", flag: "🇺🇸" },
-    { code: "+91", country: "IN", flag: "🇮🇳" },
-    { code: "+33", country: "FR", flag: "🇫🇷" },
-    { code: "+49", country: "DE", flag: "🇩🇪" },
-    { code: "+61", country: "AU", flag: "🇦🇺" },
-  ];
+  // const countryCodes = [
+  //   { code: "+44", country: "UK", flag: "🇬🇧" },
+  //   { code: "+1", country: "US", flag: "🇺🇸" },
+  //   { code: "+91", country: "IN", flag: "🇮🇳" },
+  //   { code: "+33", country: "FR", flag: "🇫🇷" },
+  //   { code: "+49", country: "DE", flag: "🇩🇪" },
+  //   { code: "+61", country: "AU", flag: "🇦🇺" },
+  // ];
 
   // Date formatting function
   const formatDate = (value) => {
@@ -181,7 +192,6 @@ export default function PersonalInformation() {
       dateOfBirth: formatDateObject(date),
     }));
     setShowDatePicker(false);
-    
   };
 
   // Close date picker when clicking outside
@@ -219,20 +229,39 @@ export default function PersonalInformation() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setSubmitted(true);
     const isValid = validateForm();
+    const otp_id = localStorage.getItem("id");
+    const token = localStorage.getItem("token");
 
     if (isValid) {
-      console.log("Form submitted:", formData);
-      alert(
-        `Form submitted successfully!\n\nDate of Birth: ${
-          formData.dateOfBirth
-        }\nMobile: ${formData.countryCode} ${formData.mobileNumber}\nNIN: ${
-          formData.noNIN ? "Not provided" : formData.ninNumber
-        }`
-      );
-      // Here you would typically navigate to the next step
+      try {
+        const response = await axios.post(
+          "http://localhost:3002/client/save-personal-info",
+          {
+            otp_id: otp_id,
+            dob: formData.dateOfBirth,
+            phoneNo: formData.mobileNumber,
+            NIN: formData.ninNumber,
+          },
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+          }
+        );
+        console.log(response);
+        if (response.status == 200) {
+          toast.success("Success");
+          console.log("1");
+          navigate("/id-proof");
+        }
+      } catch (e) {
+        console.log(e);
+        toast.error(e?.response?.data?.message);
+      }
     }
   };
 
@@ -293,205 +322,201 @@ export default function PersonalInformation() {
     }
 
     return (
-      <div className="p-4 bg-white rounded-lg shadow-lg" ref={datePickerRef}>
-        <div className="flex justify-between items-center mb-4">
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(Number.parseInt(e.target.value))}
-            className="p-1 border rounded"
-          >
-            {months.map((month, index) => (
-              <option key={month} value={index}>
-                {month}
-              </option>
-            ))}
-          </select>
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(Number.parseInt(e.target.value))}
-            className="p-1 border rounded"
-          >
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="grid grid-cols-7 gap-1 mb-2">
-          {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
-            <div
-              key={day}
-              className="h-8 w-8 flex items-center justify-center text-xs font-medium text-gray-500"
+      <>
+        <div className="p-4 bg-white rounded-lg shadow-lg" ref={datePickerRef}>
+          <div className="flex justify-between items-center mb-4">
+            <select
+              value={selectedMonth}
+              onChange={(e) =>
+                setSelectedMonth(Number.parseInt(e.target.value))
+              }
+              className="p-1 border rounded"
             >
-              {day}
-            </div>
-          ))}
+              {months.map((month, index) => (
+                <option key={month} value={index}>
+                  {month}
+                </option>
+              ))}
+            </select>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number.parseInt(e.target.value))}
+              className="p-1 border rounded"
+            >
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="grid grid-cols-7 gap-1 mb-2">
+            {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
+              <div
+                key={day}
+                className="h-8 w-8 flex items-center justify-center text-xs font-medium text-gray-500"
+              >
+                {day}
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-1">{days}</div>
         </div>
-        <div className="grid grid-cols-7 gap-1">{days}</div>
-      </div>
+      </>
     );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex items-start pt-28 justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4 shadow-lg">
-            <Shield className="w-8 h-8 text-white" />
+    <>
+      <Toaster />
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex items-start pt-28 justify-center p-4">
+        <div className="w-full max-w-md">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4 shadow-lg">
+              <Shield className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Personal Information
+            </h1>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Please provide your personal details to continue with the
+              verification process.
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Personal Information
-          </h1>
-          <p className="text-gray-600 text-sm leading-relaxed">
-            Please provide your personal details to continue with the
-            verification process.
-          </p>
-        </div>
 
-        {/* Form Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <div className="space-y-6">
-            {/* Date of Birth */}
-            <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Calendar className="w-4 h-4 inline mr-2" />
-                Date of Birth
-              </label>
+          {/* Form Card */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <div className="space-y-6">
+              {/* Date of Birth */}
               <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Calendar className="w-4 h-4 inline mr-2" />
+                  Date of Birth
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="DD/MM/YYYY"
+                    value={formData.dateOfBirth}
+                    onChange={(e) =>
+                      handleInputChange("dateOfBirth", e.target.value)
+                    }
+                    onClick={() => setShowDatePicker(true)}
+                    maxLength={10}
+                    className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
+                      submitted && errors.dateOfBirth
+                        ? "border-red-300 focus:border-red-500 bg-red-50"
+                        : "border-gray-300 focus:border-blue-500 hover:border-gray-400"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowDatePicker(!showDatePicker)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <Calendar className="w-5 h-5" />
+                  </button>
+                </div>
+                {showDatePicker && (
+                  <div className="absolute z-10 mt-1 w-full">
+                    {generateCalendar()}
+                  </div>
+                )}
+                {submitted && errors.dateOfBirth && (
+                  <div className="flex items-center mt-2 text-red-600 text-sm">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.dateOfBirth}
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile Number */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Phone className="w-4 h-4 inline mr-2" />
+                  Mobile Number
+                </label>
+                <div className="flex">
+                  <input
+                    type="tel"
+                    placeholder="Enter mobile number"
+                    value={formData.mobileNumber}
+                    onChange={(e) =>
+                      handleInputChange("mobileNumber", e.target.value)
+                    }
+                    className={`flex-1 px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
+                      submitted && errors.mobileNumber
+                        ? "border-red-300 focus:border-red-500 bg-red-50"
+                        : "border-gray-300 focus:border-blue-500 hover:border-gray-400"
+                    }`}
+                  />
+                </div>
+                {submitted && errors.mobileNumber && (
+                  <div className="flex items-center mt-2 text-red-600 text-sm">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.mobileNumber}
+                  </div>
+                )}
+              </div>
+
+              {/* NIN Number */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <CreditCard className="w-4 h-4 inline mr-2" />
+                  National Insurance Number (NIN)
+                </label>
                 <input
                   type="text"
-                  placeholder="DD/MM/YYYY"
-                  value={formData.dateOfBirth}
+                  placeholder="AA123456A"
+                  value={formData.ninNumber}
                   onChange={(e) =>
-                    handleInputChange("dateOfBirth", e.target.value)
+                    handleInputChange("ninNumber", e.target.value)
                   }
-                  onClick={() => setShowDatePicker(true)}
-                  maxLength={10}
+                  maxLength={9}
+                  disabled={formData.noNIN}
                   className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
-                    submitted && errors.dateOfBirth
+                    formData.noNIN
+                      ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                      : submitted && errors.ninNumber
                       ? "border-red-300 focus:border-red-500 bg-red-50"
                       : "border-gray-300 focus:border-blue-500 hover:border-gray-400"
                   }`}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowDatePicker(!showDatePicker)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  <Calendar className="w-5 h-5" />
-                </button>
-              </div>
-              {showDatePicker && (
-                <div className="absolute z-10 mt-1 w-full">
-                  {generateCalendar()}
-                </div>
-              )}
-              {submitted && errors.dateOfBirth && (
-                <div className="flex items-center mt-2 text-red-600 text-sm">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {errors.dateOfBirth}
-                </div>
-              )}
-            </div>
+                {submitted && errors.ninNumber && !formData.noNIN && (
+                  <div className="flex items-center mt-2 text-red-600 text-sm">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.ninNumber}
+                  </div>
+                )}
 
-            {/* Mobile Number */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Phone className="w-4 h-4 inline mr-2" />
-                Mobile Number
-              </label>
-              <div className="flex">
-                <select
-                  value={formData.countryCode}
-                  onChange={(e) =>
-                    handleInputChange("countryCode", e.target.value)
-                  }
-                  className="px-3 py-3 border-2 border-r-0 border-gray-300 rounded-l-lg focus:outline-none focus:border-blue-500 bg-gray-50"
-                >
-                  {countryCodes.map((country) => (
-                    <option key={country.code} value={country.code}>
-                      {country.flag} {country.code}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="tel"
-                  placeholder="Enter mobile number"
-                  value={formData.mobileNumber}
-                  onChange={(e) =>
-                    handleInputChange("mobileNumber", e.target.value)
-                  }
-                  className={`flex-1 px-4 py-3 border-2 border-l-0 rounded-r-lg transition-all duration-200 focus:outline-none ${
-                    submitted && errors.mobileNumber
-                      ? "border-red-300 focus:border-red-500 bg-red-50"
-                      : "border-gray-300 focus:border-blue-500 hover:border-gray-400"
-                  }`}
-                />
-              </div>
-              {submitted && errors.mobileNumber && (
-                <div className="flex items-center mt-2 text-red-600 text-sm">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {errors.mobileNumber}
+                {/* No NIN Checkbox */}
+                <div className="flex items-center mt-3">
+                  <input
+                    type="checkbox"
+                    id="noNIN"
+                    checked={formData.noNIN}
+                    onChange={(e) => handleCheckboxChange(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label htmlFor="noNIN" className="ml-2 text-sm text-gray-600">
+                    I don't have a National Insurance Number
+                  </label>
                 </div>
-              )}
-            </div>
-
-            {/* NIN Number */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <CreditCard className="w-4 h-4 inline mr-2" />
-                National Insurance Number (NIN)
-              </label>
-              <input
-                type="text"
-                placeholder="AA123456A"
-                value={formData.ninNumber}
-                onChange={(e) => handleInputChange("ninNumber", e.target.value)}
-                maxLength={9}
-                disabled={formData.noNIN}
-                className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 focus:outline-none ${
-                  formData.noNIN
-                    ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
-                    : submitted && errors.ninNumber
-                    ? "border-red-300 focus:border-red-500 bg-red-50"
-                    : "border-gray-300 focus:border-blue-500 hover:border-gray-400"
-                }`}
-              />
-              {submitted && errors.ninNumber && !formData.noNIN && (
-                <div className="flex items-center mt-2 text-red-600 text-sm">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  {errors.ninNumber}
-                </div>
-              )}
-
-              {/* No NIN Checkbox */}
-              <div className="flex items-center mt-3">
-                <input
-                  type="checkbox"
-                  id="noNIN"
-                  checked={formData.noNIN}
-                  onChange={(e) => handleCheckboxChange(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <label htmlFor="noNIN" className="ml-2 text-sm text-gray-600">
-                  I don't have a National Insurance Number
-                </label>
               </div>
             </div>
+
+            {/* Next Button */}
+            <button
+              onClick={handleSubmit}
+              className="w-full mt-8 py-3 px-4 rounded-lg font-medium transition-all duration-200 bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl cursor-pointer"
+            >
+              Continue
+              <ArrowRight className="w-5 h-5 inline ml-2" />
+            </button>
           </div>
-
-          {/* Next Button */}
-          <button
-            onClick={handleSubmit}
-            className="w-full mt-8 py-3 px-4 rounded-lg font-medium transition-all duration-200 bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl cursor-pointer"
-          >
-            Continue
-            <ArrowRight className="w-5 h-5 inline ml-2" />
-          </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

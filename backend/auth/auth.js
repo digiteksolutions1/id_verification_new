@@ -12,7 +12,7 @@ const auth = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
-    return APIresponse.error(res, null, err.message, 403);
+    return APIresponse.error(res, null, "You are not authorized", 403);
   }
 };
 

@@ -1,14 +1,14 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { getToken, setToken, removeToken } from "../utils/storage";
+import { useNavigate } from "react-router";
+import axios from "axios";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [client, setClient] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return;
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isID, setIsID] = useState(false);
   const [isAddress, setIsAddress] = useState(false);
   const [isImages, setIsImages] = useState(false);
@@ -20,23 +20,29 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const initializeAuth = async () => {
-    const token = getToken();
-    if (token) {
+    const otp = localStorage.getItem("otp");
+    if (otp) {
+      //Second time
       try {
-        const decoded = jwtDecode(token);
-        setClient(decoded);
-        setIsAuthenticated(true);
-      } catch (error) {
-        logout();
-        console.log(error);
+        const response = await axios.post(
+          "http://localhost:3002/client/auth",
+          { otp: otp },
+          { withCredentials: true }
+        );
+        console.log("Call");
+
+        if (response.status == 200) {
+          authenticate(response.data.data);
+        }
+      } catch (e) {
+        localStorage.removeItem("token");
+        console.log(e);
       }
     }
     setLoading(false);
   };
 
   const authenticate = (response) => {
-    console.log(response);
-
     setClient(response.clientName);
     setToken(response.token);
     setIsAuthenticated(true);
