@@ -23,6 +23,12 @@ app.get("/", (req, res) => {
 });
 app.use("/", router);
 
+app.use(express.static(path.join(__dirname, "dist")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
