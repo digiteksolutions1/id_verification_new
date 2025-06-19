@@ -259,7 +259,7 @@ export default function SelfieVerification() {
       );
       formData.append("client", client);
       const response = await axios.post(
-        "http://localhost:3002/client/upload-verification",
+        `${import.meta.env.VITE_BASE_URL_SERVER}/client/upload-verification`,
         formData,
         {
           headers: {

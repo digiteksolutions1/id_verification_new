@@ -155,7 +155,7 @@ export default function AddressDocumentUpload() {
       formData.append("client", client);
       // formData.append('documentType', documentType)
       const response = await axios.post(
-        "http://localhost:3002/client/upload-address",
+        `${import.meta.env.VITE_BASE_URL_SERVER}/client/upload-address`,
         formData,
         {
           headers: {

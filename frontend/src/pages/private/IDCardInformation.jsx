@@ -174,7 +174,7 @@ export default function IDCardUpload() {
       formData.append("client", client);
 
       const response = await axios.post(
-        "http://localhost:3002/client/upload-id",
+        `${import.meta.env.VITE_BASE_URL_SERVER}/client/upload-id`,
         formData,
         {
           headers: {

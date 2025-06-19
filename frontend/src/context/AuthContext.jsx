@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
       //Second time
       try {
         const response = await axios.post(
-          "http://localhost:3002/client/auth",
+          `${import.meta.env.VITE_BASE_URL_SERVER}/client/auth`,
           { otp: otp },
           { withCredentials: true }
         );

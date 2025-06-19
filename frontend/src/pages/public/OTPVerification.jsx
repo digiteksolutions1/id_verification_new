@@ -24,7 +24,7 @@ export default function OTPVerification() {
     setIsVerifying(true);
     try {
       const response = await axios.post(
-        "http://localhost:3002/client/authenticateOTP",
+        `${import.meta.env.VITE_BASE_URL_SERVER}/client/authenticateOTP`,
         { otp: completeOTP },
         { withCredentials: true }
       );
@@ -39,7 +39,7 @@ export default function OTPVerification() {
       }
     } catch (e) {
       setTimeout(() => {
-        toast.error(e.response.data.message);
+        toast.error(e?.response?.data?.message);
         setOtp(["", "", "", "", "", ""]);
         setIsVerifying(false);
       }, 1000);

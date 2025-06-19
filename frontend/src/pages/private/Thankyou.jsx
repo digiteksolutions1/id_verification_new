@@ -14,7 +14,7 @@ export default function ThankYouPage() {
     const changeStatus = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:3002/client/thankyou",
+          `${import.meta.env.VITE_BASE_URL_SERVER}/client/thankyou`,
           {
             id: id,
           },
