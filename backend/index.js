@@ -18,9 +18,9 @@ const corsOption = {
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOption));
-app.get("/", (req, res) => {
-  res.send("Website is working");
-});
+// app.get("/", (req, res) => {
+//   res.send("Website is working");
+// });
 app.use("/", router);
 
 app.use(express.static(path.join(__dirname, "dist")));

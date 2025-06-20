@@ -6,10 +6,12 @@ import IDCardUpload from "../pages/private/IDCardInformation";
 import AddressDocumentUpload from "../pages/private/AddressInformation";
 import SelfieVerification from "../pages/private/FaceVerification";
 import Thankyou from "../pages/private/Thankyou";
+import Home from "../pages/public/Home";
 
 const AppRoutes = () => {
   return (
     <Routes>
+      <Route path="/" element={<Home />}></Route>
       <Route path="/verify" element={<OTPVerification />}></Route>
       <Route
         path="/personal-information"
