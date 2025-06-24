@@ -238,7 +238,7 @@ export default function PersonalInformation() {
     if (isValid) {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL_SERVER}/client/save-personal-info`,
+          `${import.meta.env.VITE_BASE_URL}/client/save-personal-info`,
           {
             otp_id: otp_id,
             dob: formData.dateOfBirth,

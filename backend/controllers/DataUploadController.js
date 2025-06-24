@@ -4,6 +4,7 @@ const APIResponse = require("../utils/APIResponse");
 const user = require("../models/UserModel");
 const otp = require("../models/OTPModel");
 const client = require("../models/ClientModel");
+const { updateFormDataById } = require("../google/sheetsService");
 
 const DataUploadController = {
   async personalInformation(req, res) {
@@ -31,6 +32,14 @@ const DataUploadController = {
       );
       await session.commitTransaction(); // Commit transaction
       session.endSession();
+
+      //Add in google sheet
+      const data = {
+        dob: dob ?? "",
+        mobileNo: phoneNo ?? "",
+        NIN: NIN ?? "",
+      };
+      updateFormDataById(otp_id, data);
       return APIResponse.suceess(res, insertRecord, "Success", 200);
     } catch (err) {
       console.log("Error in saving information", err);

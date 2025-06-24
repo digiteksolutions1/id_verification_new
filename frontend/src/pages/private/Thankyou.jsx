@@ -10,11 +10,10 @@ export default function ThankYouPage() {
   useEffect(() => {
     const id = localStorage.getItem("id");
     const token = localStorage.getItem("token");
-    localStorage.clear();
     const changeStatus = async () => {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL_SERVER}/client/thankyou`,
+          `${import.meta.env.VITE_BASE_URL}/client/thankyou`,
           {
             id: id,
           },

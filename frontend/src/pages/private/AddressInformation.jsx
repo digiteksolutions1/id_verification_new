@@ -27,7 +27,7 @@ export default function AddressDocumentUpload() {
   const webcamRef = useRef(null);
   const fileInputRef = useRef(null);
   const token = getToken();
-  const { client, isAddress } = useAuth();
+  const { client, isAddress, folderLink } = useAuth();
   const navigate = useNavigate();
 
   // Check if device is mobile
@@ -153,9 +153,10 @@ export default function AddressDocumentUpload() {
       const formData = new FormData();
       formData.append("addressProof", addressDocument.file);
       formData.append("client", client);
+      formData.append("folderLink", folderLink);
       // formData.append('documentType', documentType)
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL_SERVER}/client/upload-address`,
+        `${import.meta.env.VITE_BASE_URL}/client/upload-address`,
         formData,
         {
           headers: {
@@ -165,6 +166,7 @@ export default function AddressDocumentUpload() {
           withCredentials: true,
         }
       );
+      console.log(response);
       toast.success(response?.data?.message);
       navigate("/face-verification");
     } catch (error) {

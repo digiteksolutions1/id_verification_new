@@ -11,6 +11,7 @@ const clientSchema = new mongoose.Schema({
   frontPose: { type: String, reqired: false },
   leftPose: { type: String, reqired: false },
   rightPose: { type: String, reqired: false },
+  folderLink: { type: String },
 });
 
 module.exports = mongoose.model("client", clientSchema);

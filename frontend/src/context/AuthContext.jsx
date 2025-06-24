@@ -14,9 +14,11 @@ export const AuthProvider = ({ children }) => {
   const [isImages, setIsImages] = useState(false);
   const [isDOB, setIsDOB] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [folderLink, setFolderLink] = useState("");
 
   useEffect(() => {
     initializeAuth();
+    console.log(folderLink);
   }, []);
 
   const initializeAuth = async () => {
@@ -25,15 +27,15 @@ export const AuthProvider = ({ children }) => {
       //Second time
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL_SERVER}/client/auth`,
+          `${import.meta.env.VITE_BASE_URL}/client/auth`,
           { otp: otp },
           { withCredentials: true }
         );
-        console.log("Call");
 
         if (response.status == 200) {
           authenticate(response.data.data);
         }
+        console.log(response.data.data);
       } catch (e) {
         localStorage.removeItem("token");
         console.log(e);
@@ -50,6 +52,8 @@ export const AuthProvider = ({ children }) => {
     setIsAddress(response.addressDoc);
     setIsImages(response.images);
     setIsDOB(response.dob);
+    setFolderLink(response.folderLink);
+    console.log(response);
   };
 
   return (
@@ -63,6 +67,7 @@ export const AuthProvider = ({ children }) => {
         isDOB,
         isImages,
         loading,
+        folderLink,
       }}
     >
       {children}

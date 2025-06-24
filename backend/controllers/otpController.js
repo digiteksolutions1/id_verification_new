@@ -50,8 +50,20 @@ const otpController = {
     const session = await mongoose.startSession(); // Start a session for transaction
     session.startTransaction();
     try {
-      const { clientName, idDoc, addressDoc, images, DOB } = req.body;
+      const { clientName, idDoc, addressDoc, images, DOB, folderLink } =
+        req.body;
       console.log(DOB);
+      const findUser = await user.findOne(
+        {
+          name: req.user.name,
+          email: req.user.email,
+        },
+        { _id: 1 }
+      );
+      if (!findUser) {
+        return APIResponse.error(res, {}, "No such user found", 404);
+      }
+
       if (!clientName) {
         return APIResponse.error(res, {}, "Client Name is missing", 400);
       }
@@ -70,7 +82,11 @@ const otpController = {
         images: images,
         dob: DOB,
       });
-      await client.create({ clientName: clientName, otp_id: otpRecord._id });
+      await client.create({
+        clientName: clientName,
+        otp_id: otpRecord._id,
+        folderLink: folderLink,
+      });
 
       await session.commitTransaction(); // Commit transaction
       session.endSession();
@@ -126,6 +142,7 @@ const otpController = {
 
             // From users collection
             "client.clientName": 1,
+            "client.folderLink": 1,
             _id: 1,
           },
         },
@@ -168,6 +185,7 @@ const otpController = {
         clientName: otpData.client.clientName,
         token: token,
         otp_id: otpData._id,
+        folderLink: otpData.client.folderLink,
       };
       res.cookie("token", token, {
         httpOnly: true,

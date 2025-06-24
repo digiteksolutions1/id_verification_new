@@ -149,7 +149,7 @@ const uploadVerificationFiles = (req, res) => {
 
         return res.status(200).json({
           success: true,
-          message: "Verification files uploaded successfully",
+          message: "Verified successfully",
           data: {
             client,
             files: results,

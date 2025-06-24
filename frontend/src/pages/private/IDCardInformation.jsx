@@ -28,7 +28,7 @@ export default function IDCardUpload() {
   const frontInputRef = useRef(null);
   const backInputRef = useRef(null);
   const navigate = useNavigate();
-  const { isID, client } = useAuth();
+  const { isID, client, folderLink } = useAuth();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -172,9 +172,10 @@ export default function IDCardUpload() {
       formData.append("frontImage", frontImage.file); // assuming this is a File object
       formData.append("backImage", backImage.file);
       formData.append("client", client);
+      formData.append("folderLink", folderLink);
 
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL_SERVER}/client/upload-id`,
+        `${import.meta.env.VITE_BASE_URL}/client/upload-id`,
         formData,
         {
           headers: {
@@ -184,6 +185,8 @@ export default function IDCardUpload() {
           withCredentials: true,
         }
       );
+      console.log(response);
+
       toast.success(response?.data?.message);
       navigate("/address-proof");
       // Optionally navigate to the next page here

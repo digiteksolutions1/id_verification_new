@@ -56,6 +56,7 @@ const AuthController = {
 
             // From users collection
             "client.clientName": 1,
+            "client.folderLink": 1,
             _id: 0,
           },
         },
@@ -94,6 +95,7 @@ const AuthController = {
         dob: otpData.dob,
         clientName: otpData.client.clientName,
         token: token,
+        folderLink: otpData.client.folderLink,
       };
       return APIResponse.suceess(
         res,

@@ -24,7 +24,7 @@ export default function OTPVerification() {
     setIsVerifying(true);
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL_SERVER}/client/authenticateOTP`,
+        `${import.meta.env.VITE_BASE_URL}/client/authenticateOTP`,
         { otp: completeOTP },
         { withCredentials: true }
       );
