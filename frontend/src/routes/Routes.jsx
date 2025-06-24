@@ -1,11 +1,11 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import OTPVerification from "../pages/public/OTPVerification";
-import PersonalInformation from "../pages/private/PersonalInformation";
-import IDCardUpload from "../pages/private/IDCardInformation";
-import AddressDocumentUpload from "../pages/private/AddressInformation";
-import SelfieVerification from "../pages/private/FaceVerification";
-import Thankyou from "../pages/private/Thankyou";
+import PersonalInformation from "../pages/protected/PersonalInformation";
+import IDCardUpload from "../pages/protected/IDCardInformation";
+import AddressDocumentUpload from "../pages/protected/AddressInformation";
+import SelfieVerification from "../pages/protected/FaceVerification";
+import Thankyou from "../pages/protected/Thankyou";
 import Home from "../pages/public/Home";
 
 const AppRoutes = () => {

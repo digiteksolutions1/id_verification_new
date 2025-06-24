@@ -4,7 +4,6 @@ import {
   Upload,
   Camera,
   X,
-  CheckCircle,
   AlertCircle,
   RefreshCw,
   FileText,
@@ -15,7 +14,8 @@ import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import { getToken } from "../../utils/storage";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
+import placeholder from "../../assets/placeholder.svg";
 
 export default function AddressDocumentUpload() {
   const [addressDocument, setAddressDocument] = useState(null);
@@ -346,7 +346,7 @@ export default function AddressDocumentUpload() {
                         </div>
                       ) : (
                         <img
-                          src={addressDocument.url || "/placeholder.svg"}
+                          src={addressDocument.url || placeholder}
                           alt="Address document"
                           className="w-full h-64 object-contain rounded"
                         />

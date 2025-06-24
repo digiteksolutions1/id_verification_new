@@ -1,21 +1,20 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import {
   Shield,
-  ArrowLeft,
   Upload,
   Camera,
   X,
-  CheckCircle,
   AlertCircle,
   RefreshCw,
   ArrowRight,
 } from "lucide-react";
 import Webcam from "react-webcam";
-import IDImage from "./idimage.png";
+import IDImage from "../../assets/idimage.png";
 import axios from "axios";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
+import placeholder from "../../assets/placeholder.svg";
 
 export default function IDCardUpload() {
   const [frontImage, setFrontImage] = useState(null);
@@ -276,7 +275,7 @@ export default function IDCardUpload() {
                     {frontImage ? (
                       <div className="relative">
                         <img
-                          src={frontImage.url || "/placeholder.svg"}
+                          src={frontImage.url || placeholder}
                           alt="Front of ID card"
                           className="w-full h-40 md:h-48 object-contain rounded"
                         />
@@ -346,7 +345,7 @@ export default function IDCardUpload() {
                     {backImage ? (
                       <div className="relative">
                         <img
-                          src={backImage.url || "/placeholder.svg"}
+                          src={backImage.url || placeholder}
                           alt="Back of ID card"
                           className="w-full h-40 md:h-48 object-contain rounded"
                         />

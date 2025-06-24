@@ -3,16 +3,14 @@
 import { useState, useEffect, useRef } from "react";
 import {
   Shield,
-  ArrowLeft,
   Calendar,
   Phone,
   CreditCard,
   AlertCircle,
-  CheckCircle,
   ArrowRight,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 

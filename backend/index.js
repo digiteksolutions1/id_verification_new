@@ -10,7 +10,7 @@ require("./database/db");
 const port = process.env.PORT;
 const app = express();
 const corsOption = {
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173", "http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   credentials: true,
 };
@@ -18,15 +18,13 @@ const corsOption = {
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOption));
-// app.get("/", (req, res) => {
-//   res.send("Website is working");
-// });
+
 app.use("/", router);
 
-app.use(express.static(path.join(__dirname, "dist")));
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 app.use("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+  res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
 });
 
 // Start the server
@@ -34,7 +32,3 @@ app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
 
-// (async () => {
-//   const pass = await hash.hashPassword("");
-//   console.log(pass);
-// })();

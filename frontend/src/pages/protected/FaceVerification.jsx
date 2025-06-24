@@ -1,22 +1,15 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import {
-  Shield,
-  Camera,
-  RefreshCw,
-  X,
-  AlertCircle,
-  Upload,
-} from "lucide-react";
+import { Shield, Camera, RefreshCw, X, Upload } from "lucide-react";
 import Webcam from "react-webcam";
 import axios from "axios";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getToken } from "../../utils/storage";
 import toast, { Toaster } from "react-hot-toast";
-import frontpose from "./front.png";
-import leftpose from "./left.png";
-import rightpose from "./right.png";
-import placeholder from "./placeholder.svg";
+import frontpose from "../../assets/front.png";
+import leftpose from "../../assets/left.png";
+import rightpose from "../../assets/right.png";
+import placeholder from "../../assets/placeholder.svg";
 
 export default function SelfieVerification() {
   // States for managing the capture process

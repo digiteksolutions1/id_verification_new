@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { Shield, ArrowLeft, CheckCircle } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import { Navigate, useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
+import Logo from "../../components/Logo";
+import { TrustTiles } from "../../components/TrustTiles";
 
 export default function OTPVerification() {
   const navigate = useNavigate();
@@ -12,6 +14,7 @@ export default function OTPVerification() {
   const [isVerifying, setIsVerifying] = useState(false);
   const inputRefs = useRef([]);
   const { authenticate, isAuthenticated } = useAuth();
+
 
   useEffect(() => {
     localStorage.removeItem("otp");
@@ -125,26 +128,27 @@ export default function OTPVerification() {
   return (
     <>
       <Toaster />
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex items-start pt-12 md:pt-28 justify-center p-4">
+      <div className="min-h-screen bg-primary flex items-start pt-28 md:pt-28 justify-center p-4">
+        <Logo />
         <div className="w-full max-w-md">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4 shadow-lg">
-              <Shield className="w-8 h-8 text-white" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4 shadow-lg border-black border-2">
+              <Shield className="w-8 h-8 text-black" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
               Verify Your Identity
             </h1>
-            <p className="text-gray-600 text-sm leading-relaxed">
+            <p className="text-gray-700 text-sm leading-relaxed">
               We've sent a 6-digit verification code to your email address.
               Please enter it below to proceed with document upload.
             </p>
           </div>
 
           {/* OTP Input Card */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-4 text-center">
+          <div className="rounded-2xl p-8">
+            <div className="mb-3">
+              <label className="block text-md font-semibold text-black mb-4 text-center">
                 Enter Verification Code
               </label>
 
@@ -162,112 +166,49 @@ export default function OTPVerification() {
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     onPaste={handlePaste}
                     className={`w-12 h-12 text-center text-xl font-semibold border-2 rounded-lg transition-all duration-200 focus:outline-none ${
-                      digit
-                        ? "border-blue-500 bg-blue-50 text-blue-700"
-                        : "border-gray-300 hover:border-gray-400 focus:border-blue-500"
-                    } ${isComplete ? "border-blue-500 bg-blue-100" : ""}`}
+                      digit ? " text-black" : "hover:border-gray-600"
+                    } `}
                     disabled={isVerifying}
                   />
                 ))}
               </div>
-
-              {/* Status Indicator */}
-              {/* {isComplete && !isVerifying && (
-              <div className="flex items-center justify-center text-blue-600 mb-4 animate-fade-in">
-                <CheckCircle className="w-5 h-5 mr-2" />
-                <span className="text-sm font-medium">Code Complete</span>
-              </div>
-            )} */}
-
               {isVerifying && (
-                <div className="flex items-center justify-center text-blue-600 mb-4">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-2"></div>
+                <div className="flex items-center justify-center text-primary mb-2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 mr-2"></div>
                   <span className="text-sm font-medium">Verifying...</span>
                 </div>
               )}
             </div>
           </div>
           {/* Trust Indicators */}
-          <div className="mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="mt-2 rounded-xl p-6">
             <div className="grid grid-cols-1 gap-4">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
-                  </div>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-gray-900">
-                    Data Encrypted & Secure
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    End-to-end encryption protects your information
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
-                  </div>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-gray-900">
-                    GDPR Compliant
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    Full compliance with data protection regulations
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
-                  </div>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-gray-900">
-                    ICO Registered
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    Registered with Information Commissioner's Office
-                  </p>
-                </div>
-              </div>
+              <TrustTiles
+                heading="Data Encrypted & Secure"
+                description="End-to-end encryption protects your information"
+              />
+              <TrustTiles
+                heading="GDPR Compliant"
+                description="Full compliance with data protection regulations"
+              />
+              <TrustTiles
+                heading="ICO Registered"
+                description="Registered with Information Commissioner's Office"
+              />
             </div>
           </div>
-          <p className="text-gray-600 text-sm leading-relaxed text-center mt-8">
+          <p className="text-gray-700 text-sm leading-relaxed text-center mt-8">
             If the verification code is not working or expired — please contact
             our support team at{" "}
             <a
               href="mailto:info@digital-accountant.co.uk"
-              className="text-blue-400 underline"
+              className="font-bold underline"
             >
-              info@digital-accountant.co.uk
+              compliance@digital-accountant.co.uk
             </a>{" "}
             for prompt assistance.
           </p>
         </div>
-
-        <style jsx>{`
-          @keyframes fade-in {
-            from {
-              opacity: 0;
-              transform: translateY(-10px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-
-          .animate-fade-in {
-            animation: fade-in 0.3s ease-out;
-          }
-        `}</style>
       </div>
     </>
   );
